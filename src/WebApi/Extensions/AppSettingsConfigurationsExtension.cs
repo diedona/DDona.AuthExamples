@@ -1,4 +1,4 @@
-﻿using WebApi.Models;
+﻿using WebApi.Models.Configurations;
 
 namespace WebApi.Extensions
 {
@@ -7,6 +7,7 @@ namespace WebApi.Extensions
         public static void AddAppSettingsConfiguration(this IServiceCollection services, ConfigurationManager configurationManager)
         {
             services.Configure<GeneralConfiguration>(configurationManager.GetSection(nameof(GeneralConfiguration)));
+            services.Configure<JwtConfiguration>(configurationManager.GetSection(nameof(JwtConfiguration)));
         }
     }
 }

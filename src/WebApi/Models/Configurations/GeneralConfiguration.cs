@@ -1,4 +1,4 @@
-﻿namespace WebApi.Models
+﻿namespace WebApi.Models.Configurations
 {
     public class GeneralConfiguration
     {
