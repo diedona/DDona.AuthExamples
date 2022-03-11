@@ -1,12 +1,14 @@
-﻿namespace WebApi
+﻿using WebApi.Extensions;
+
+namespace WebApi
 {
     public class Startup
     {
-        private ConfigurationManager _Configuration;
+        private ConfigurationManager _ConfigurationManager;
 
         public Startup(ConfigurationManager configuration)
         {
-            _Configuration = configuration;
+            _ConfigurationManager = configuration;
         }
 
         public void ConfigureApp(WebApplication app, IWebHostEnvironment environment)
@@ -29,6 +31,7 @@
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.AddAppSettingsConfiguration(_ConfigurationManager);
         }
     }
 }
