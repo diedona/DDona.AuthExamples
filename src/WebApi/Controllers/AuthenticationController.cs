@@ -30,7 +30,7 @@ namespace WebApi.Controllers
                 return BadRequest(ModelState.GetAllErrors());
 
             var userDTO = UserLoginRequestViewModel.Mapper.ToDTO(request);
-            string token = _LoginService.GenerateToken(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.Secret);
+            string token = _LoginService.GenerateToken(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
             return Ok(request);
         }
 
@@ -38,7 +38,7 @@ namespace WebApi.Controllers
         [Route("login-with-dto")]
         public async Task<IActionResult> LoginWithDTO([FromBody] UserLoginRequestDTO request)
         {
-            string token = _LoginService.GenerateToken(request, _JwtConfiguration.ValidIssuer, _JwtConfiguration.Secret);
+            string token = _LoginService.GenerateToken(request, _JwtConfiguration.ValidIssuer, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
             return Ok(request);
         }
     }

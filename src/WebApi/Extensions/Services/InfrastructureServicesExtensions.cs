@@ -1,6 +1,6 @@
 ﻿using Domain.Services.Domain;
 
-namespace WebApi.Extensions.DomainServices
+namespace WebApi.Extensions.Services
 {
     public static class DomainServicesExtensions
     {

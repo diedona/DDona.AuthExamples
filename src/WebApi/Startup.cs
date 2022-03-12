@@ -1,5 +1,5 @@
 ﻿using WebApi.Extensions.Configuration;
-using WebApi.Extensions.DomainServices;
+using WebApi.Extensions.Services;
 
 namespace WebApi
 {
@@ -33,6 +33,7 @@ namespace WebApi
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddAppSettingsConfiguration(_ConfigurationManager);
+            services.AddInfrastructureServices();
             services.AddDomainServices();
         }
     }
