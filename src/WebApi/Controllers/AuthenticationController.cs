@@ -36,7 +36,11 @@ namespace WebApi.Controllers
                 return BadRequest(ModelState.GetAllErrors());
 
             var userDTO = _Mapper.Map<UserLoginRequestDTO>(request);
-            string token = AuthorizeUser(userDTO);
+            string? token = await AuthorizeUser(userDTO);
+
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState.GetAllErrors());
+
             return Ok(new { token, username = request.Username });
         }
 
@@ -44,7 +48,11 @@ namespace WebApi.Controllers
         [Route("login-with-dto")]
         public async Task<IActionResult> LoginWithDTO([FromBody] UserLoginRequestDTO request)
         {
-            string token = AuthorizeUser(request);
+            string? token = await AuthorizeUser(request);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.GetAllErrors());
+
             return Ok(new { token, username = request.Username });
         }
 
@@ -57,11 +65,11 @@ namespace WebApi.Controllers
             return Ok(username);
         }
 
-        private string AuthorizeUser(UserLoginRequestDTO userDTO)
+        private async Task<string?> AuthorizeUser(UserLoginRequestDTO userDTO)
         {
-            string token = _AuthenticationService.AuthorizeUser(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.ValidAudience, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
+            string? token = await _AuthenticationService.AuthorizeUser(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.ValidAudience, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
             if (_AuthenticationService.Errors.Any())
-                throw new Exception(_AuthenticationService.Errors.FirstOrDefault());
+                ModelState.AddModelError("domain", _AuthenticationService.Errors.FirstOrDefault());
 
             return token;
         }

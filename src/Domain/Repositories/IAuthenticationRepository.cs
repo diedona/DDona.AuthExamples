@@ -4,6 +4,6 @@ namespace Domain.Repositories
 {
     public interface IAuthenticationRepository
     {
-        Task<UserAuthorizationDTO> GetAuthorizationUserByUsername(string username);
+        Task<UserAuthorizationDTO?> GetAuthorizationUserByUsername(string username);
     }
 }

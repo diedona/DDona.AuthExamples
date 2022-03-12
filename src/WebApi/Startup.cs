@@ -1,6 +1,7 @@
 ﻿using Infrastructure;
 using WebApi.Extensions.Authentication;
 using WebApi.Extensions.Configuration;
+using WebApi.Extensions.Repositories;
 using WebApi.Extensions.Services;
 
 namespace WebApi
@@ -36,6 +37,7 @@ namespace WebApi
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddAppSettingsConfiguration(_ConfigurationManager);
+            services.AddRepositories();
             services.AddInfrastructureServices();
             services.AddDomainServices();
             services.AddProjectAuthentication(_ConfigurationManager);

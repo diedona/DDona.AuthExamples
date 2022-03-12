@@ -8,11 +8,6 @@ namespace Domain.Services.Domain.Base
 {
     public abstract class BaseService
     {
-        public IEnumerable<string> Errors { get; protected set; }
-
-        protected BaseService()
-        {
-            Errors = new List<string>();
-        }
+        public IList<string> Errors { get; protected set; } = new List<string>();
     }
 }
