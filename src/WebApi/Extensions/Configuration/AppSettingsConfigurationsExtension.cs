@@ -1,6 +1,6 @@
 ﻿using WebApi.Models.Configurations;
 
-namespace WebApi.Extensions
+namespace WebApi.Extensions.Configuration
 {
     public static class AppSettingsConfigurationsExtension
     {

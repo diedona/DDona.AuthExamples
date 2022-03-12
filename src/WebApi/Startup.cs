@@ -1,4 +1,4 @@
-﻿using WebApi.Extensions;
+﻿using WebApi.Extensions.Configuration;
 
 namespace WebApi
 {

@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using WebApi.ViewModels.Login;
+﻿using Microsoft.AspNetCore.Mvc;
+using WebApi.Extensions.ModelState;
+using WebApi.ViewModels.User;
 
 namespace WebApi.Controllers
 {
@@ -9,9 +9,12 @@ namespace WebApi.Controllers
     public class AuthenticationController : ControllerBase
     {
         [HttpPost]
-        [Route("login")]
-        public async Task<IActionResult> Login([FromBody]LoginRequest request)
+        [Route("login-with-viewmodel")]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequestViewModel request)
         {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState.GetAllErrors());
+
             return Ok(request);
         }
     }
