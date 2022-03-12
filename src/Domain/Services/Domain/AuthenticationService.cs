@@ -9,12 +9,15 @@ namespace Domain.Services.Domain
     {
         private readonly ITokenGenerator _TokenGenerator;
         private readonly IAuthenticationRepository _AuthenticationRepository;
+        private readonly IEncryption _Encryption;
 
-        public AuthenticationService(ITokenGenerator tokenGenerator, 
-            IAuthenticationRepository authenticationRepository)
+        public AuthenticationService(ITokenGenerator tokenGenerator,
+            IAuthenticationRepository authenticationRepository, 
+            IEncryption encryption)
         {
             _TokenGenerator = tokenGenerator;
             _AuthenticationRepository = authenticationRepository;
+            _Encryption = encryption;
         }
 
         public async Task<string?> AuthorizeUser(UserLoginRequestDTO user, string issuer, string audience, string key, TimeSpan lifeSpan)
@@ -26,14 +29,12 @@ namespace Domain.Services.Domain
                 return null;
             }
 
-            // should use hashing
-            if(!userFromDB.Password.Equals(user.Password))
+            if(!_Encryption.ValidateEquality(user.Password, userFromDB.Password))
             {
                 this.Errors.Add("Invalid credentials");
                 return null;
             }
 
-            //generates token
             return _TokenGenerator.GenerateToken(user, issuer, audience, key, lifeSpan);
         }
     }

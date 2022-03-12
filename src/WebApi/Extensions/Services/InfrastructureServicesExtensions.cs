@@ -1,4 +1,5 @@
-﻿using Domain.Services.Domain;
+﻿using Domain.Services.Infrastructure;
+using Infrastructure.Services;
 
 namespace WebApi.Extensions.Services
 {
@@ -6,7 +7,8 @@ namespace WebApi.Extensions.Services
     {
         public static void AddDomainServices(this IServiceCollection services)
         {
-            services.AddScoped<AuthenticationService>();
+            services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
+            services.AddScoped<IEncryption, BCryptEncryption>();
         }
     }
 }

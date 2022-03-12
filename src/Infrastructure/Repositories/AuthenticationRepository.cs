@@ -10,6 +10,10 @@ namespace Infrastructure.Repositories
         private readonly IReadOnlyCollection<UserEntity> _ReadonlyUsers;
         private readonly IMapper _Mapper;
 
+        private const string DIEGO_PW = "$2a$11$944FPZjio8AG7U6JBjoaB.agxJ2CWP.gW7blMnmvCDwxa6zZshcnS"; //123
+        private const string JOHN_PW = "$2a$11$eGNEpyGVPxduJOpcaANzee8rc3HSABdb1qb04nghUYWLfy1m1YZXm"; //321
+        private const string NARUTO_PW = "$2a$11$jD873mvzdJPI2h4qivLdkeJuHUEaHulUEGOmMutu0mI4PRMQuFK3y"; //hokage
+
         public AuthenticationRepository(IMapper mapper)
         {
             _ReadonlyUsers = GetSeedUsers();
@@ -27,9 +31,9 @@ namespace Infrastructure.Repositories
         {
             return new List<UserEntity>
             {
-                new UserEntity("diego.dona", "123", new DateTime(1997, 5, 15), "admin", string.Empty),
-                new UserEntity("john.castle", "321", new DateTime(1982, 3, 7), "sales", "reports,edit"),
-                new UserEntity("naruto", "hokage", new DateTime(2002, 8, 3), "sales", string.Empty)
+                new UserEntity("diego.dona", DIEGO_PW, new DateTime(1997, 5, 15), "admin", string.Empty),
+                new UserEntity("john.castle", JOHN_PW, new DateTime(1982, 3, 7), "sales", "reports,edit"),
+                new UserEntity("naruto", NARUTO_PW, new DateTime(2002, 8, 3), "sales", string.Empty)
             };
         }
     }
