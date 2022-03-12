@@ -1,7 +1,9 @@
 ﻿using Domain.DataTransferObjects.User;
 using Domain.Services.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Security.Claims;
 using WebApi.Extensions.ModelState;
 using WebApi.Models.Configurations;
 using WebApi.ViewModels.User;
@@ -12,13 +14,13 @@ namespace WebApi.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly LoginService _LoginService;
+        private readonly AuthenticationService _AuthenticationService;
         private readonly JwtConfiguration _JwtConfiguration;
 
-        public AuthenticationController(LoginService loginService,
+        public AuthenticationController(AuthenticationService loginService,
             IOptions<JwtConfiguration> jwtConfiguration)
         {
-            _LoginService = loginService;
+            _AuthenticationService = loginService;
             _JwtConfiguration = jwtConfiguration.Value;
         }
 
@@ -30,16 +32,34 @@ namespace WebApi.Controllers
                 return BadRequest(ModelState.GetAllErrors());
 
             var userDTO = UserLoginRequestViewModel.Mapper.ToDTO(request);
-            string token = _LoginService.GenerateToken(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
-            return Ok(request);
+            string token = AuthorizeUser(userDTO);
+            return Ok(new { token, username = request.Username });
         }
 
         [HttpPost]
         [Route("login-with-dto")]
         public async Task<IActionResult> LoginWithDTO([FromBody] UserLoginRequestDTO request)
         {
-            string token = _LoginService.GenerateToken(request, _JwtConfiguration.ValidIssuer, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
-            return Ok(request);
+            string token = AuthorizeUser(request);
+            return Ok(new { token, username = request.Username });
+        }
+
+        [HttpGet]
+        [Route("who-am-i")]
+        [Authorize]
+        public async Task<IActionResult> WhoAmI()
+        {
+            string? username = this.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Name))?.Value;
+            return Ok(username);
+        }
+
+        private string AuthorizeUser(UserLoginRequestDTO userDTO)
+        {
+            string token = _AuthenticationService.AuthorizeUser(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.ValidAudience, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
+            if (_AuthenticationService.Errors.Any())
+                throw new Exception(_AuthenticationService.Errors.FirstOrDefault());
+
+            return token;
         }
     }
 }

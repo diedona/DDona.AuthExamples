@@ -6,7 +6,7 @@ namespace WebApi.Extensions.Services
     {
         public static void AddDomainServices(this IServiceCollection services)
         {
-            services.AddScoped<LoginService>();
+            services.AddScoped<AuthenticationService>();
         }
     }
 }

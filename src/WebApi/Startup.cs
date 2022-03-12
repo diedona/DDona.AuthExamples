@@ -1,4 +1,5 @@
-﻿using WebApi.Extensions.Configuration;
+﻿using WebApi.Extensions.Authentication;
+using WebApi.Extensions.Configuration;
 using WebApi.Extensions.Services;
 
 namespace WebApi
@@ -22,6 +23,7 @@ namespace WebApi
             }
 
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.Run();
@@ -35,6 +37,7 @@ namespace WebApi
             services.AddAppSettingsConfiguration(_ConfigurationManager);
             services.AddInfrastructureServices();
             services.AddDomainServices();
+            services.AddProjectAuthentication(_ConfigurationManager);
         }
     }
 }
