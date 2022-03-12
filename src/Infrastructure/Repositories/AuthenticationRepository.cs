@@ -1,4 +1,5 @@
-﻿using Domain.DataTransferObjects.User;
+﻿using AutoMapper;
+using Domain.DataTransferObjects.User;
 using Domain.Entities;
 using Domain.Repositories;
 
@@ -7,15 +8,18 @@ namespace Infrastructure.Repositories
     public class AuthenticationRepository : IAuthenticationRepository
     {
         private readonly IReadOnlyCollection<UserEntity> _ReadonlyUsers;
+        private readonly IMapper _Mapper;
 
-        public AuthenticationRepository()
+        public AuthenticationRepository(IMapper mapper)
         {
             _ReadonlyUsers = GetSeedUsers();
+            _Mapper = mapper;
         }
 
         public async Task<UserAuthorizationDTO> GetAuthorizationUserByUsername(string username)
         {
             var user = _ReadonlyUsers.FirstOrDefault(x => x.Username == username);
+            var userDTO = _Mapper.Map<UserAuthorizationDTO>(user);
             return await Task.FromResult(new UserAuthorizationDTO());
         }
 

@@ -1,4 +1,5 @@
-﻿using Domain.DataTransferObjects.User;
+﻿using AutoMapper;
+using Domain.DataTransferObjects.User;
 using Domain.Services.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,15 @@ namespace WebApi.Controllers
     {
         private readonly AuthenticationService _AuthenticationService;
         private readonly JwtConfiguration _JwtConfiguration;
+        private readonly IMapper _Mapper;
 
         public AuthenticationController(AuthenticationService loginService,
-            IOptions<JwtConfiguration> jwtConfiguration)
+            IOptions<JwtConfiguration> jwtConfiguration, 
+            IMapper mapper)
         {
             _AuthenticationService = loginService;
             _JwtConfiguration = jwtConfiguration.Value;
+            _Mapper = mapper;
         }
 
         [HttpPost]
@@ -31,7 +35,7 @@ namespace WebApi.Controllers
             if(!ModelState.IsValid)
                 return BadRequest(ModelState.GetAllErrors());
 
-            var userDTO = UserLoginRequestViewModel.Mapper.ToDTO(request);
+            var userDTO = _Mapper.Map<UserLoginRequestDTO>(request);
             string token = AuthorizeUser(userDTO);
             return Ok(new { token, username = request.Username });
         }
