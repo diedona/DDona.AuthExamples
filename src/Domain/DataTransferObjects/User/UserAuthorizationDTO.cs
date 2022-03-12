@@ -13,6 +13,6 @@ namespace Domain.DataTransferObjects.User
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
-        public IEnumerable<string> Claims { get; set; } = Enumerable.Empty<string>();
+        public string Claims { get; set; } = string.Empty;
     }
 }

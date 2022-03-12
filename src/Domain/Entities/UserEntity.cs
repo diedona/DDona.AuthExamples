@@ -9,8 +9,8 @@ namespace Domain.Entities
         [JsonIgnore]
         public string Password { get; private set; }
         public DateTime DateOfBirth { get; private set; }
-        public string Role { get; set; }
-        public string Claims { get; set; }
+        public string Role { get; private set; }
+        public string Claims { get; private set; }
 
         public UserEntity(string username, string password, DateTime dateOfBirth, string role, string claims) : base()
         {
