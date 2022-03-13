@@ -84,19 +84,39 @@ namespace Domain.Services.Domain
                 return;
             }
 
-            if (!targetUserEntity.IsActive())
-            {
-                Errors.Add("can't do this request");
-                return;
-            }
-
-            if (!issuerUserEntity.CanInactivateAnUser(targetUserEntity.Username))
-            {
-                Errors.Add("current user can't do this request");
-                return;
-            }
-
             targetUserEntity.InactivateUser(DateTime.Now, issuerUserEntity);
+            if(targetUserEntity.HasErrors)
+            {
+                Errors.AddRange(targetUserEntity.GetErrors());
+                return;
+            }
+
+            await _AuthenticationRepository.UpdateUser(targetUserEntity);
+        }
+
+        public async Task ActivateUser(string issuerUserName, Guid userId)
+        {
+            var issuerUserEntity = await _AuthenticationRepository.GetAuthorizationUserByUsername(issuerUserName);
+            if (issuerUserEntity == null)
+            {
+                Errors.Add("who the fuck are you?");
+                return;
+            }
+
+            var targetUserEntity = await _AuthenticationRepository.GetAuthorizationUserById(userId);
+            if (targetUserEntity == null)
+            {
+                Errors.Add("user not found");
+                return;
+            }
+
+            targetUserEntity.ActivateUser(issuerUserEntity);
+            if (targetUserEntity.HasErrors)
+            {
+                Errors.AddRange(targetUserEntity.GetErrors());
+                return;
+            }
+
             await _AuthenticationRepository.UpdateUser(targetUserEntity);
         }
     }

@@ -20,7 +20,7 @@ namespace Domain.Entities
         public UserEntity? InactivatedByUser
         {
             get => _InactivatedByUser;
-            set 
+            set
             {
                 _InactivatedByUser = value;
                 InactivatedByUserId = (_InactivatedByUser == null) ? null : _InactivatedByUser.Id;
@@ -30,7 +30,7 @@ namespace Domain.Entities
 
         public Guid? InactivatedByUserId { get; private set; }
 
-        public virtual ICollection<UserEntity>? UsersInactivatedByMe { get;private set; }
+        public virtual ICollection<UserEntity>? UsersInactivatedByMe { get; private set; }
 
         public UserEntity(Guid id, string username, string password, DateTime dateOfBirth, string role, string? claims) : base(id)
         {
@@ -44,13 +44,6 @@ namespace Domain.Entities
         public bool IsAdmin()
         {
             return Role.Equals(ADMIN_ROLE);
-        }
-
-        public void InactivateUser(DateTime dateTimeInactivation, UserEntity issuerUserEntity)
-        {
-            this.InactivatedAt = dateTimeInactivation;
-            this.InactivatedByUser = issuerUserEntity;
-            this.InactivatedByUserId = issuerUserEntity.Id;
         }
 
         public bool IsActive()
@@ -74,6 +67,42 @@ namespace Domain.Entities
         {
             bool sameUsernameAsCurrent = this.Username.Equals(usernameToBeInactivated);
             return this.IsActive() && this.IsAdmin() && (!sameUsernameAsCurrent);
+        }
+
+        public void InactivateUser(DateTime dateTimeInactivation, UserEntity issuerUserEntity)
+        {
+            if (!issuerUserEntity.IsActive() || !issuerUserEntity.IsAdmin() || this.Id == issuerUserEntity.Id)
+            {
+                _Errors.Add("current user can't do this request");
+                return;
+            }
+
+            if (!this.IsActive())
+            {
+                _Errors.Add("can't do this request");
+                return;
+            }
+
+            this.InactivatedAt = dateTimeInactivation;
+            this.InactivatedByUser = issuerUserEntity;
+        }
+
+        public void ActivateUser(UserEntity issuerUserEntity)
+        {
+            if (!issuerUserEntity.IsActive() || !issuerUserEntity.IsAdmin() || this.Id == issuerUserEntity.Id)
+            {
+                _Errors.Add("current user can't do this request");
+                return;
+            }
+
+            if (this.IsActive())
+            {
+                _Errors.Add("can't do this request");
+                return;
+            }
+
+            this.InactivatedByUser = null;
+            this.InactivatedAt = null;
         }
     }
 }

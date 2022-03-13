@@ -86,6 +86,18 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "admin")]
+        [HttpPut]
+        [Route("activate-user/{userId}")]
+        public async Task<ActionResult> ActivateUser(Guid userId)
+        {
+            await _AuthenticationService.ActivateUser(this.User.Identity!.Name!, userId);
+            if (_AuthenticationService.Errors.Any())
+                return BadRequest(_AuthenticationService.Errors.First());
+
+            return Ok();
+        }
+
         private async Task<string?> AuthorizeUser(UserLoginRequestDTO userDTO)
         {
             string? token = await _AuthenticationService.AuthorizeUser(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.ValidAudience, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);

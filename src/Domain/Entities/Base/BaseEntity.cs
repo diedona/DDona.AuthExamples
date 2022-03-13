@@ -2,6 +2,8 @@
 {
     public abstract class BaseEntity
     {
+        protected readonly List<string> _Errors = new List<string>();
+
         public Guid Id { get; protected set; }
 
         protected BaseEntity()
@@ -13,6 +15,10 @@
         {
             Id = id;
         }
+
+        public bool HasErrors => _Errors.Any();
+
+        public IReadOnlyList<string> GetErrors() => _Errors.AsReadOnly();
 
     }
 }
