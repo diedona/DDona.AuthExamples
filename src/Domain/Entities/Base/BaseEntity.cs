@@ -8,5 +8,11 @@
         {
             Id = Guid.NewGuid();
         }
+
+        protected BaseEntity(Guid id)
+        {
+            Id = id;
+        }
+
     }
 }

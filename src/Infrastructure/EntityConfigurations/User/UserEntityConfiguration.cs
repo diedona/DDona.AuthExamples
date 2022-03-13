@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.EntityConfigurations
+namespace Infrastructure.EntityConfigurations.User
 {
-    internal class UserConfiguration : IEntityTypeConfiguration<UserEntity>
+    internal class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
@@ -17,6 +17,8 @@ namespace Infrastructure.EntityConfigurations
             builder.Property(x => x.Username)
                 .IsRequired()
                 .HasMaxLength(60);
+
+            builder.HasData(UserEntityData.GetSeed());
         }
     }
 }

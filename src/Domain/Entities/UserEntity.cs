@@ -12,7 +12,7 @@ namespace Domain.Entities
         public string Role { get; private set; }
         public string? Claims { get; private set; }
 
-        public UserEntity(string username, string password, DateTime dateOfBirth, string role, string? claims) : base()
+        public UserEntity(Guid id, string username, string password, DateTime dateOfBirth, string role, string? claims) : base(id)
         {
             Username = username;
             Password = password;

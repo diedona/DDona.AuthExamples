@@ -31,9 +31,9 @@ namespace Infrastructure.Repositories
         {
             return new List<UserEntity>
             {
-                new UserEntity("diego.dona", DIEGO_PW, new DateTime(1997, 5, 15), "admin", string.Empty),
-                new UserEntity("john.castle", JOHN_PW, new DateTime(1982, 3, 7), "sales", "reports,edit"),
-                new UserEntity("naruto", NARUTO_PW, new DateTime(2002, 8, 3), "sales", string.Empty)
+                new UserEntity(Guid.NewGuid(), "diego.dona", DIEGO_PW, new DateTime(1997, 5, 15), "admin", string.Empty),
+                new UserEntity(Guid.NewGuid(), "john.castle", JOHN_PW, new DateTime(1982, 3, 7), "sales", "reports,edit"),
+                new UserEntity(Guid.NewGuid(), "naruto", NARUTO_PW, new DateTime(2002, 8, 3), "sales", string.Empty)
             };
         }
     }
