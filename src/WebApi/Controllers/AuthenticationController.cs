@@ -67,7 +67,7 @@ namespace WebApi.Controllers
         public async Task<ActionResult> CreateUser([FromBody] UserCreateViewModel request)
         {
             var dto = _Mapper.Map<UserCreateDTO>(request);
-            await _AuthenticationService.CreateNewUser(this.User.Identity.Name, dto);
+            await _AuthenticationService.CreateNewUser(this.User.Identity!.Name!, dto);
             if (_AuthenticationService.Errors.Any())
                 return BadRequest(_AuthenticationService.Errors.First());
 
