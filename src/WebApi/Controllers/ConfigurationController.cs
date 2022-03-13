@@ -16,7 +16,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<string>> Get()
+        public ActionResult<string> Get()
         {
             return Ok(_GeneralConfiguration.SecurityPhrase);
         }

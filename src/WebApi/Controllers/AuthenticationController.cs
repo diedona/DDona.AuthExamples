@@ -59,7 +59,7 @@ namespace WebApi.Controllers
         [HttpGet]
         [Route("who-am-i")]
         [Authorize]
-        public async Task<IActionResult> WhoAmI()
+        public IActionResult WhoAmI()
         {
             string? username = this.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Name))?.Value;
             return Ok(username);
@@ -69,7 +69,7 @@ namespace WebApi.Controllers
         {
             string? token = await _AuthenticationService.AuthorizeUser(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.ValidAudience, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
             if (_AuthenticationService.Errors.Any())
-                ModelState.AddModelError("domain", _AuthenticationService.Errors.FirstOrDefault());
+                ModelState.AddModelError("domain", _AuthenticationService.Errors.First());
 
             return token;
         }
