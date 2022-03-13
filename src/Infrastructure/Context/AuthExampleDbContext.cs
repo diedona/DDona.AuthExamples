@@ -5,6 +5,8 @@ namespace Infrastructure.Context
 {
     public class AuthExampleDbContext : DbContext
     {
+        public AuthExampleDbContext(DbContextOptions options) : base(options) { }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(InfrastructureReferenceClass).Assembly);

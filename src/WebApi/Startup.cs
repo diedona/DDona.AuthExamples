@@ -1,6 +1,7 @@
 ﻿using Infrastructure;
 using WebApi.Extensions.Authentication;
 using WebApi.Extensions.Configuration;
+using WebApi.Extensions.EntityFramework;
 using WebApi.Extensions.Repositories;
 using WebApi.Extensions.Services;
 
@@ -42,6 +43,7 @@ namespace WebApi
             services.AddDomainServices();
             services.AddProjectAuthentication(_ConfigurationManager);
             services.AddAutoMapper(typeof(Startup), typeof(InfrastructureReferenceClass));
+            services.AddEntityFramework(_ConfigurationManager);
         }
     }
 }
