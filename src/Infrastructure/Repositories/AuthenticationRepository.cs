@@ -33,5 +33,20 @@ namespace Infrastructure.Repositories
             await _DbSet.AddAsync(newUserEntity);
             await _Context.SaveChangesAsync();
         }
+
+        public async Task<UserEntity?> GetAuthorizationUserById(Guid userId)
+        {
+            var user = await _AsNoTracking.FirstOrDefaultAsync(x => x.Id.Equals(userId));
+            return user;
+        }
+
+        public async Task UpdateUser(UserEntity userEntity)
+        {
+            var entityEntry = _Context.Entry(userEntity);
+            if (entityEntry.State == EntityState.Detached)
+                entityEntry.State = EntityState.Modified;
+
+            await _Context.SaveChangesAsync();
+        }
     }
 }

@@ -18,6 +18,9 @@ namespace Infrastructure.EntityConfigurations.User
                 .IsRequired()
                 .HasMaxLength(60);
 
+            builder.HasMany(x => x.UsersInactivatedByMe)
+                .WithOne(x => x.InactivatedByUser);
+
             builder.HasData(UserEntityData.GetSeed());
         }
     }

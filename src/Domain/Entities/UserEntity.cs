@@ -8,6 +8,8 @@ namespace Domain.Entities
         private const string ADMIN_ROLE = "admin";
         private readonly IEnumerable<string> _ValidRoles = new[] { "admin", "sales" };
 
+        private UserEntity? _InactivatedByUser;
+
         public string Username { get; private set; }
         [JsonIgnore]
         public string Password { get; private set; }
@@ -15,6 +17,20 @@ namespace Domain.Entities
         public string Role { get; private set; }
         public string? Claims { get; private set; }
         public DateTime? InactivatedAt { get; private set; }
+        public UserEntity? InactivatedByUser
+        {
+            get => _InactivatedByUser;
+            set 
+            {
+                _InactivatedByUser = value;
+                InactivatedByUserId = (_InactivatedByUser == null) ? null : _InactivatedByUser.Id;
+            }
+        }
+
+
+        public Guid? InactivatedByUserId { get; private set; }
+
+        public virtual ICollection<UserEntity>? UsersInactivatedByMe { get;private set; }
 
         public UserEntity(Guid id, string username, string password, DateTime dateOfBirth, string role, string? claims) : base(id)
         {
@@ -30,19 +46,21 @@ namespace Domain.Entities
             return Role.Equals(ADMIN_ROLE);
         }
 
-        public void InactivateUser()
+        public void InactivateUser(DateTime dateTimeInactivation, UserEntity issuerUserEntity)
         {
-            this.InactivatedAt = DateTime.Now;
+            this.InactivatedAt = dateTimeInactivation;
+            this.InactivatedByUser = issuerUserEntity;
+            this.InactivatedByUserId = issuerUserEntity.Id;
         }
 
-        public bool IsUserActive()
+        public bool IsActive()
         {
             return (!this.InactivatedAt.HasValue);
         }
 
         public bool CanCreateNewUser()
         {
-            return this.IsUserActive() && this.IsAdmin();
+            return this.IsActive() && this.IsAdmin();
         }
 
         public bool HasAnyInvalidRole()
@@ -50,6 +68,12 @@ namespace Domain.Entities
             string[] currentRoles = this.Role.Split(',');
             bool containAnyInvalidRole = currentRoles.Any(c => !_ValidRoles.Contains(c));
             return containAnyInvalidRole;
+        }
+
+        public bool CanInactivateAnUser(string usernameToBeInactivated)
+        {
+            bool sameUsernameAsCurrent = this.Username.Equals(usernameToBeInactivated);
+            return this.IsActive() && this.IsAdmin() && (!sameUsernameAsCurrent);
         }
     }
 }

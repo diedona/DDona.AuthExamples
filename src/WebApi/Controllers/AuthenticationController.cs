@@ -74,6 +74,18 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "admin")]
+        [HttpPut]
+        [Route("inactivate-user/{userId}")]
+        public async Task<ActionResult> InactivateUser(Guid userId)
+        {
+            await _AuthenticationService.InactivateUser(this.User.Identity!.Name!, userId);
+            if (_AuthenticationService.Errors.Any())
+                return BadRequest(_AuthenticationService.Errors.First());
+
+            return Ok();
+        }
+
         private async Task<string?> AuthorizeUser(UserLoginRequestDTO userDTO)
         {
             string? token = await _AuthenticationService.AuthorizeUser(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.ValidAudience, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
