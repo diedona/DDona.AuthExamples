@@ -1,4 +1,4 @@
-﻿using Domain.DataTransferObjects.User;
+﻿using Domain.Entities;
 using Domain.Services.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,16 +9,20 @@ namespace Infrastructure.Services
 {
     public class JwtTokenGenerator : ITokenGenerator
     {
-        public string GenerateToken(UserLoginRequestDTO user, string issuer, string audience, string key, TimeSpan lifeSpan)
+        public string GenerateToken(UserEntity user, string issuer, string audience, string key, TimeSpan lifeSpan)
         {
             var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
-            var tokenDescriptor = new JwtSecurityToken(issuer, audience, claims, expires: DateTime.Now.Add(lifeSpan), signingCredentials: credentials);
+            var tokenDescriptor = new JwtSecurityToken(issuer, audience, claims, 
+                expires: DateTime.Now.Add(lifeSpan), 
+                signingCredentials: credentials);
+
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
     }

@@ -22,20 +22,20 @@ namespace Domain.Services.Domain
 
         public async Task<string?> AuthorizeUser(UserLoginRequestDTO user, string issuer, string audience, string key, TimeSpan lifeSpan)
         {
-            var userFromDB = await _AuthenticationRepository.GetAuthorizationUserByUsername(user.Username);
-            if (userFromDB == null)
+            var userEntity = await _AuthenticationRepository.GetAuthorizationUserByUsername(user.Username);
+            if (userEntity == null)
             {
                 this.Errors.Add("Invalid credentials");
                 return null;
             }
 
-            if(!_Encryption.ValidateEquality(user.Password, userFromDB.Password))
+            if(!_Encryption.ValidateEquality(user.Password, userEntity.Password))
             {
                 this.Errors.Add("Invalid credentials");
                 return null;
             }
 
-            return _TokenGenerator.GenerateToken(user, issuer, audience, key, lifeSpan);
+            return _TokenGenerator.GenerateToken(userEntity, issuer, audience, key, lifeSpan);
         }
     }
 }

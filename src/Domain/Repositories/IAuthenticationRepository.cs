@@ -1,9 +1,9 @@
-﻿using Domain.DataTransferObjects.User;
+﻿using Domain.Entities;
 
 namespace Domain.Repositories
 {
     public interface IAuthenticationRepository
     {
-        Task<UserAuthorizationDTO?> GetAuthorizationUserByUsername(string username);
+        Task<UserEntity?> GetAuthorizationUserByUsername(string username);
     }
 }
