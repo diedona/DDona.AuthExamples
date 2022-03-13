@@ -9,6 +9,7 @@ namespace WebApi.Mapper
         public ViewModelToDataTransferObjectProfile()
         {
             CreateMap<UserLoginRequestViewModel, UserLoginRequestDTO>();
+            CreateMap<UserCreateViewModel, UserCreateDTO>();
         }
     }
 }

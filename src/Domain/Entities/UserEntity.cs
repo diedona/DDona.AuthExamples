@@ -6,6 +6,7 @@ namespace Domain.Entities
     public class UserEntity : BaseEntity
     {
         private const string ADMIN_ROLE = "admin";
+        private readonly IEnumerable<string> _ValidRoles = new[] { "admin", "sales" };
 
         public string Username { get; private set; }
         [JsonIgnore]
@@ -39,5 +40,16 @@ namespace Domain.Entities
             return (!this.InactivatedAt.HasValue);
         }
 
+        public bool CanCreateNewUser()
+        {
+            return this.IsUserActive() && this.IsAdmin();
+        }
+
+        public bool HasAnyInvalidRole()
+        {
+            string[] currentRoles = this.Role.Split(',');
+            bool containAnyInvalidRole = currentRoles.Any(c => !_ValidRoles.Contains(c));
+            return containAnyInvalidRole;
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace WebApi.Controllers
         private readonly IMapper _Mapper;
 
         public AuthenticationController(AuthenticationService loginService,
-            IOptions<JwtConfiguration> jwtConfiguration, 
+            IOptions<JwtConfiguration> jwtConfiguration,
             IMapper mapper)
         {
             _AuthenticationService = loginService;
@@ -32,13 +32,10 @@ namespace WebApi.Controllers
         [Route("login-with-viewmodel")]
         public async Task<IActionResult> LoginWithViewModel([FromBody] UserLoginRequestViewModel request)
         {
-            if(!ModelState.IsValid)
-                return BadRequest(ModelState.GetAllErrors());
-
             var userDTO = _Mapper.Map<UserLoginRequestDTO>(request);
             string? token = await AuthorizeUser(userDTO);
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetAllErrors());
 
             return Ok(new { token, username = request.Username });
@@ -49,20 +46,32 @@ namespace WebApi.Controllers
         public async Task<IActionResult> LoginWithDTO([FromBody] UserLoginRequestDTO request)
         {
             string? token = await AuthorizeUser(request);
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetAllErrors());
 
             return Ok(new { token, username = request.Username });
         }
 
+        [Authorize]
         [HttpGet]
         [Route("who-am-i")]
-        [Authorize]
         public IActionResult WhoAmI()
         {
             string? username = this.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Name))?.Value;
             return Ok(username);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        [Route("create-user")]
+        public async Task<ActionResult> CreateUser([FromBody] UserCreateViewModel request)
+        {
+            var dto = _Mapper.Map<UserCreateDTO>(request);
+            await _AuthenticationService.CreateNewUser(this.User.Identity.Name, dto);
+            if (_AuthenticationService.Errors.Any())
+                return BadRequest(_AuthenticationService.Errors.First());
+
+            return Ok();
         }
 
         private async Task<string?> AuthorizeUser(UserLoginRequestDTO userDTO)

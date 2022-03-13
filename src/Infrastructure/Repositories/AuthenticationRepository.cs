@@ -27,5 +27,11 @@ namespace Infrastructure.Repositories
             var user = await _AsNoTracking.FirstOrDefaultAsync(x => x.Username.Equals(username));
             return user;
         }
+
+        public async Task AddUser(UserEntity newUserEntity)
+        {
+            await _DbSet.AddAsync(newUserEntity);
+            await _Context.SaveChangesAsync();
+        }
     }
 }

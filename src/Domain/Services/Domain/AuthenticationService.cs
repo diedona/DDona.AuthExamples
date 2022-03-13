@@ -1,4 +1,5 @@
 ﻿using Domain.DataTransferObjects.User;
+using Domain.Entities;
 using Domain.Repositories;
 using Domain.Services.Domain.Base;
 using Domain.Services.Infrastructure;
@@ -36,6 +37,35 @@ namespace Domain.Services.Domain
             }
 
             return _TokenGenerator.GenerateToken(userEntity, issuer, audience, key, lifeSpan);
+        }
+
+        public async Task CreateNewUser(string issuerUserName, UserCreateDTO desiredUserToBeCreated)
+        {
+            var issuerUserEntity = await _AuthenticationRepository.GetAuthorizationUserByUsername(issuerUserName);
+            if(issuerUserEntity == null)
+            {
+                Errors.Add("who the fuck are you?");
+                return;
+            }
+
+            if(!issuerUserEntity.CanCreateNewUser())
+            {
+                Errors.Add("current user can't do this request");
+                return;
+            }
+
+            string hashedPassword = _Encryption.Encrypt(desiredUserToBeCreated.Password);
+            UserEntity newUserEntity = new UserEntity(Guid.NewGuid(), 
+                desiredUserToBeCreated.Username, hashedPassword,
+                desiredUserToBeCreated.DateOfBirth, desiredUserToBeCreated.Role, null);
+
+            if(newUserEntity.HasAnyInvalidRole())
+            {
+                Errors.Add($"'{newUserEntity.Role}' contain one or more an invalid roles");
+                return;
+            }
+
+            await _AuthenticationRepository.AddUser(newUserEntity);
         }
     }
 }
