@@ -1,18 +1,18 @@
 ﻿using Domain.DataTransferObjects.User;
 using Domain.Entities;
 using Domain.Repositories;
-using Domain.Services.Domain.Base;
+using Domain.Services.Application.Base;
 using Domain.Services.Infrastructure;
 
-namespace Domain.Services.Domain
+namespace Domain.Services.Application
 {
-    public class AuthenticationService : BaseService
+    public class AuthenticationApplicationService : BaseApplicationService
     {
         private readonly ITokenGenerator _TokenGenerator;
         private readonly IAuthenticationRepository _AuthenticationRepository;
         private readonly IEncryption _Encryption;
 
-        public AuthenticationService(ITokenGenerator tokenGenerator,
+        public AuthenticationApplicationService(ITokenGenerator tokenGenerator, 
             IAuthenticationRepository authenticationRepository, 
             IEncryption encryption)
         {
@@ -26,13 +26,13 @@ namespace Domain.Services.Domain
             var userEntity = await _AuthenticationRepository.GetAuthorizationUserByUsername(user.Username);
             if (userEntity == null)
             {
-                this.Errors.Add("Invalid credentials");
+                Errors.Add("Invalid credentials");
                 return null;
             }
 
-            if(!_Encryption.ValidateEquality(user.Password, userEntity.Password))
+            if (!_Encryption.ValidateEquality(user.Password, userEntity.Password))
             {
-                this.Errors.Add("Invalid credentials");
+                Errors.Add("Invalid credentials");
                 return null;
             }
 
@@ -42,24 +42,24 @@ namespace Domain.Services.Domain
         public async Task CreateNewUser(string issuerUserName, UserCreateDTO desiredUserToBeCreated)
         {
             var issuerUserEntity = await _AuthenticationRepository.GetAuthorizationUserByUsername(issuerUserName);
-            if(issuerUserEntity == null)
+            if (issuerUserEntity == null)
             {
                 Errors.Add("who the fuck are you?");
                 return;
             }
 
-            if(!issuerUserEntity.CanCreateNewUser())
+            if (!issuerUserEntity.CanCreateNewUser())
             {
                 Errors.Add("current user can't do this request");
                 return;
             }
 
             string hashedPassword = _Encryption.Encrypt(desiredUserToBeCreated.Password);
-            UserEntity newUserEntity = new UserEntity(Guid.NewGuid(), 
+            UserEntity newUserEntity = new UserEntity(Guid.NewGuid(),
                 desiredUserToBeCreated.Username, hashedPassword,
                 desiredUserToBeCreated.DateOfBirth, desiredUserToBeCreated.Role, null);
 
-            if(newUserEntity.HasAnyInvalidRole())
+            if (newUserEntity.HasAnyInvalidRole())
             {
                 Errors.Add($"'{newUserEntity.Role}' contain one or more an invalid roles");
                 return;
@@ -78,14 +78,14 @@ namespace Domain.Services.Domain
             }
 
             var targetUserEntity = await _AuthenticationRepository.GetAuthorizationUserById(userId);
-            if(targetUserEntity == null)
+            if (targetUserEntity == null)
             {
                 Errors.Add("user not found");
                 return;
             }
 
             targetUserEntity.InactivateUser(DateTime.Now, issuerUserEntity);
-            if(targetUserEntity.HasErrors)
+            if (targetUserEntity.HasErrors)
             {
                 Errors.AddRange(targetUserEntity.GetErrors());
                 return;

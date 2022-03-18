@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Domain.DataTransferObjects.User;
-using Domain.Services.Domain;
+using Domain.Services.Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -15,15 +15,15 @@ namespace WebApi.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly AuthenticationService _AuthenticationService;
+        private readonly AuthenticationApplicationService _AuthenticationApplicationService;
         private readonly JwtConfiguration _JwtConfiguration;
         private readonly IMapper _Mapper;
 
-        public AuthenticationController(AuthenticationService loginService,
+        public AuthenticationController(AuthenticationApplicationService loginService,
             IOptions<JwtConfiguration> jwtConfiguration,
             IMapper mapper)
         {
-            _AuthenticationService = loginService;
+            _AuthenticationApplicationService = loginService;
             _JwtConfiguration = jwtConfiguration.Value;
             _Mapper = mapper;
         }
@@ -67,9 +67,9 @@ namespace WebApi.Controllers
         public async Task<ActionResult> CreateUser([FromBody] UserCreateViewModel request)
         {
             var dto = _Mapper.Map<UserCreateDTO>(request);
-            await _AuthenticationService.CreateNewUser(this.User.Identity!.Name!, dto);
-            if (_AuthenticationService.Errors.Any())
-                return BadRequest(_AuthenticationService.Errors.First());
+            await _AuthenticationApplicationService.CreateNewUser(this.User.Identity!.Name!, dto);
+            if (_AuthenticationApplicationService.Errors.Any())
+                return BadRequest(_AuthenticationApplicationService.Errors.First());
 
             return Ok();
         }
@@ -79,9 +79,9 @@ namespace WebApi.Controllers
         [Route("inactivate-user/{userId}")]
         public async Task<ActionResult> InactivateUser(Guid userId)
         {
-            await _AuthenticationService.InactivateUser(this.User.Identity!.Name!, userId);
-            if (_AuthenticationService.Errors.Any())
-                return BadRequest(_AuthenticationService.Errors.First());
+            await _AuthenticationApplicationService.InactivateUser(this.User.Identity!.Name!, userId);
+            if (_AuthenticationApplicationService.Errors.Any())
+                return BadRequest(_AuthenticationApplicationService.Errors.First());
 
             return Ok();
         }
@@ -91,18 +91,18 @@ namespace WebApi.Controllers
         [Route("activate-user/{userId}")]
         public async Task<ActionResult> ActivateUser(Guid userId)
         {
-            await _AuthenticationService.ActivateUser(this.User.Identity!.Name!, userId);
-            if (_AuthenticationService.Errors.Any())
-                return BadRequest(_AuthenticationService.Errors.First());
+            await _AuthenticationApplicationService.ActivateUser(this.User.Identity!.Name!, userId);
+            if (_AuthenticationApplicationService.Errors.Any())
+                return BadRequest(_AuthenticationApplicationService.Errors.First());
 
             return Ok();
         }
 
         private async Task<string?> AuthorizeUser(UserLoginRequestDTO userDTO)
         {
-            string? token = await _AuthenticationService.AuthorizeUser(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.ValidAudience, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
-            if (_AuthenticationService.Errors.Any())
-                ModelState.AddModelError("domain", _AuthenticationService.Errors.First());
+            string? token = await _AuthenticationApplicationService.AuthorizeUser(userDTO, _JwtConfiguration.ValidIssuer, _JwtConfiguration.ValidAudience, _JwtConfiguration.Secret, _JwtConfiguration.LifeSpan);
+            if (_AuthenticationApplicationService.Errors.Any())
+                ModelState.AddModelError("domain", _AuthenticationApplicationService.Errors.First());
 
             return token;
         }
